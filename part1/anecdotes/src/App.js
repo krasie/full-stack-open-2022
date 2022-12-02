@@ -1,4 +1,3 @@
-import { max } from 'moment'
 import { useState } from 'react'
 
 const App = () => {
