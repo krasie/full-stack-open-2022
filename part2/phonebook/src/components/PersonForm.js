@@ -10,7 +10,7 @@ const PersonFrom = ({persons,newPersons,filter,addPhonebook,handleNewName,handle
           name: <input value={newPersons.name} onChange={handleNewName}/>
         </div>
         <div>
-          number: <input value={newPersons.phone} onChange={handleNewPhone}/>
+          number: <input value={newPersons.number} onChange={handleNewPhone}/>
         </div>
         <div>
           <button type='submit'>add</button>

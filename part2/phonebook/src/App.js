@@ -1,17 +1,19 @@
-import { useState } from 'react'
+import { useState,useEffect  } from 'react'
+import axios from 'axios'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Numbers from './components/Numbers'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', phone: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', phone: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', phone: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', phone: '39-23-6423122', id: 4 }
-  ])
-  const [newPersons, setNewPersons] = useState({name : '',phone:''})
-  const [filter, setFilter] = useState('')  
+  const [persons, setPersons] = useState([])
+  const [newPersons, setNewPersons] = useState({name : '',number:''})
+  const [filter, setFilter] = useState('') 
+
+  useEffect(()=>{
+    axios.get('http://localhost:3001/persons').then(
+      response => setPersons(response.data)
+    )
+  }, [])
 
   const addPhonebook = (event) => {
     event.preventDefault()
@@ -21,7 +23,7 @@ const App = () => {
     }
     const id = persons.reduce((p,v) => p.id < v.id ? v : p ).id + 1
     setPersons(persons.concat({...newPersons,id:id}))
-    setNewPersons({name : '',phone:''})
+    setNewPersons({name : '',number:''})
   }
 
   const handleNewName = (event) => {
@@ -29,7 +31,7 @@ const App = () => {
   }
 
   const handleNewPhone = (event) => {
-    setNewPersons({...newPersons,phone:event.target.value})
+    setNewPersons({...newPersons,number:event.target.value})
   }
 
   const handlefilter = (event) =>{
