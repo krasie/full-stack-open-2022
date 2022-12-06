@@ -2,9 +2,35 @@ import { useState,useEffect  } from 'react'
 import axios from 'axios'
 
 
+const Weather = ({lat,lon,api_key}) =>{
+  const [weather, setWeather] = useState({"weather":[{"id":0,"main":null,"description":null,"icon":"04d"}],"base":null,"main":{"temp":0},"visibility":0,"wind":{"speed":0},"clouds":{"all":0},"dt":0,"sys":{"sunrise":0,"sunset":0},"timezone":0,"id":0,"name":"","cod":0})
+
+  useEffect(()=>{
+    axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${api_key}&units=metric`).then(
+      response => {
+        setWeather(response.data)
+      }
+    )
+  }, [lat,lon])
+
+  const img = `http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`
+
+  return(
+    <div>
+      <h2>Weather</h2>
+      temperature {weather.main.temp} Celsius 
+      <div><img src={img}/></div>
+      <div>wind {weather.wind.speed}m/s</div>
+    </div>
+  )
+}
+
+
+
 const App = () =>{
-  const [countries, setCountries] = useState('')
+  const [countries, setCountries] = useState([])
   const [match, setMatch] = useState('')
+  
 
   useEffect(()=>{
     axios.get('https://restcountries.com/v3.1/all').then(
@@ -14,12 +40,14 @@ const App = () =>{
     )
   }, [])
 
+
+
+
   const handleMatch = (event) =>{
     setMatch(event.target.value)
   }
 
   const handleShowDetail = (countryName) => {
-    console.log(countryName)
     setMatch(countryName)
   }
 
@@ -32,9 +60,10 @@ const App = () =>{
         return (<>Too many matches,specify another filter</>)
       }
       if(countriesMatchShow.length == 1){
-        
         const countryOne = countriesMatchShow[0]
-        console.log(countryOne.languages);
+        const [lat,lon] = countryOne.latlng
+        const api_key = process.env.REACT_APP_API_KEY
+      
         return (
           <>
             <h2>{countryOne.name.common}</h2>
@@ -45,6 +74,7 @@ const App = () =>{
               {Object.keys(countryOne.languages).map((k,i) => <li key={i}>{countryOne.languages[k]}</li>)}
             </ul>
             <img src={countryOne.flags.png} width='200px'></img>
+            <Weather lat={lat} lon={lon} api_key={api_key} />
 
           </>
         )
