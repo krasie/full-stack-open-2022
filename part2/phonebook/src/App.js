@@ -2,6 +2,7 @@ import { useState,useEffect  } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Numbers from './components/Numbers'
+import Notification from './components/Notification'
 import phoneSevice from './services/phones'
 
 
@@ -9,6 +10,7 @@ const App = () => {
   const [persons, setPersons] = useState([])
   const [newPersons, setNewPersons] = useState({name : '',number:''})
   const [filter, setFilter] = useState('') 
+  const [message, setMessage] = useState(null) 
 
   useEffect(()=>{
     phoneSevice.getAll().then(
@@ -26,6 +28,7 @@ const App = () => {
         phoneSevice.update(updatePersons.id,{...updatePersons,number:newPersons.number}).then(
           resp => {
             setPersons(persons.map(obj => obj = obj.id === updatePersons.id ? resp : obj))
+            showMessage(`Replaced ${resp.name} phone number`)
           }
         )
       }
@@ -36,6 +39,7 @@ const App = () => {
     phoneSevice.create({...newPersons,id:id}).then(
       resp => {
         setPersons(persons.concat(resp))
+        showMessage(`Added ${resp.name}`)
       }
     )
     setNewPersons({name : '',number:''})
@@ -59,8 +63,20 @@ const App = () => {
         () => {
           setPersons(persons.filter(n => n.id !== id))
         }
+      ).catch(
+        err => {
+          showMessage(`${name} has already been removed from server`,'error')
+          setPersons(persons.filter(n => n.id !== id))
+        }
       )
     }
+  }
+
+  const showMessage = (message,type='info') => {
+    setMessage(message)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
   }
 
   
@@ -68,6 +84,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <Filter filter={filter} handlefilter={handlefilter} />
       <h2>add a new</h2>
       <PersonForm persons={persons} newPersons={newPersons} filter={filter} addPhonebook={addPhonebook} handleNewName={handleNewName} handleNewPhone={handleNewPhone}/>
