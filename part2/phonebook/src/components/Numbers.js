@@ -3,7 +3,7 @@ import React from "react";
 const Numbers = ({persons,filter,del}) =>{
   const personsShow = filter === ''
   ? persons
-  : persons.filter(persons => persons.name.indexOf(filter) != -1)
+  : persons.filter(persons => persons.name.indexOf(filter) !== -1)
   return (<>{
     personsShow.map(
     (persons) => 

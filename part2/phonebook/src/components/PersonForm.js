@@ -1,9 +1,6 @@
 import React from "react";
 
 const PersonFrom = ({persons,newPersons,filter,addPhonebook,handleNewName,handleNewPhone}) =>{
-  const personsShow = filter === ''
-  ? persons
-  : persons.filter(persons => persons.name.indexOf(filter) != -1)
   return (
     <form onSubmit={addPhonebook}>
         <div>
