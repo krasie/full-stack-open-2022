@@ -10,7 +10,7 @@ const App = () => {
   const [persons, setPersons] = useState([])
   const [newPersons, setNewPersons] = useState({name : '',number:''})
   const [filter, setFilter] = useState('') 
-  const [message, setMessage] = useState(null) 
+  const [message, setMessage] = useState({}) 
 
   useEffect(()=>{
     phoneSevice.getAll().then(
@@ -41,6 +41,10 @@ const App = () => {
         setPersons(persons.concat(resp))
         showMessage(`Added ${resp.name}`)
       }
+    ).catch(
+      error => {
+        showMessage(error.response.data.error,'error')
+      }
     )
     setNewPersons({name : '',number:''})
   }
@@ -62,6 +66,7 @@ const App = () => {
       phoneSevice.del(id).then(
         () => {
           setPersons(persons.filter(n => n.id !== id))
+          showMessage(`${name} removed`)
         }
       ).catch(
         err => {
@@ -73,9 +78,9 @@ const App = () => {
   }
 
   const showMessage = (message,type='info') => {
-    setMessage(message)
+    setMessage({message:message,type:type})
         setTimeout(() => {
-          setMessage(null)
+          setMessage({})
         }, 5000)
   }
 
@@ -84,7 +89,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={message} />
+      <Notification message={message.message} type={message.type} />
       <Filter filter={filter} handlefilter={handlefilter} />
       <h2>add a new</h2>
       <PersonForm persons={persons} newPersons={newPersons} filter={filter} addPhonebook={addPhonebook} handleNewName={handleNewName} handleNewPhone={handleNewPhone}/>
