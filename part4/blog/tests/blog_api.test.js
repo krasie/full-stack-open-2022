@@ -77,6 +77,12 @@ const  noHasTitle = {
   url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html"
 }
 
+const updateBlog = {
+  title: "Type wars new",
+  author: "Robert C. Martin",
+  url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html"
+}
+
 beforeEach(async () => {
   await Blog.deleteMany({})
   await Blog.insertMany(blogs)
@@ -128,6 +134,30 @@ test('When title or url is not defiend ,return 400 request', async () => {
   await api.post('/api/blogs').send(noHasTitle).expect(400)
   await api.post('/api/blogs').send(noHasUrl).expect(400)
 },20000)
+
+
+describe("Delete blog",() => {
+  test("Delete a blog",async () =>{
+    await api.delete('/api/blogs/5a422a851b54a676234d17f7').send().expect(204)
+  })
+
+  test("delete a not exist blog",async ()=>{
+    await api.delete("/api/blogs/1111").send().expect(400)
+  })
+
+})
+
+
+describe("Update a blog",()=>{
+  test("Update a blog",async() =>{
+    const resp = await api.put('/api/blogs/5a422bc61b54a676234d17fc').send(updateBlog).expect(200)
+    expect(resp.body.title).toBe(updateBlog.title)
+  })
+
+  test("Update with id not exist",async() =>{
+    const resp = await api.put('/api/blogs/111').send(noHasTitle).expect(400)
+  })
+})
 
 afterAll(() => {
   mongoose.connection.close()
