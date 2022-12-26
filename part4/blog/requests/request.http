@@ -10,3 +10,12 @@ content-type: application/json
 }
 
 GET http://127.0.0.1:3003/api/blogs
+
+
+POST http://127.0.0.1:3003/api/login
+content-type: application/json
+
+{
+    "username": "mluukkai",
+    "password": "salainen"
+}
