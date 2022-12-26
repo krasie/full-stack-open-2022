@@ -1,6 +1,6 @@
 POST http://127.0.0.1:3003/api/blogs 
 content-type: application/json
-authorization:bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1sdXVra2FpIiwiaWQiOiI2MzljMzc5OTg1NjBhZWY0MzJlYmU2ODUiLCJpYXQiOjE2NzIwMjA5MTV9.pIy4lhNImYkC2tekvVEfrDE7hYS4J8-mkCjL3mIURZ8
+authorization:bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1sdXVra2FpIiwiaWQiOiI2MzljMzc5OTg1NjBhZWY0MzJlYmU2ODUiLCJpYXQiOjE2NzIwMjI4NTV9.nl1GTWVsmOI4PWQCRa86YNQO10kBD-fWzq7ifPxAiDc
 
 {
     "title": "test",
