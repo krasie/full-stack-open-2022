@@ -7,6 +7,16 @@ const api = supertest(app)
 const Blog = require('../models/blog')
 
 
+const getToken = async() =>{
+  const login = await api.post("/api/login").send({
+    "username": "mluukkai",
+    "password": "salainen"
+  })
+  const token = 'Bearer ' + login.body.token
+  return token
+}
+
+
 const blogs = [
   {
     _id: "5a422a851b54a676234d17f7",
@@ -57,7 +67,7 @@ const blogs = [
     title: "Type wars",
     author: "Robert C. Martin",
     url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
-    userId:'639c36f9c7bd169fab014b6a',
+    userId:'63a8ffa405bd82d8c4197e75',
     likes: 2,
     __v: 0
   }  
@@ -120,35 +130,50 @@ test('ID is defined', async () => {
 
 
 test('Add a blog', async () => {
-  const resp = await api.get('/api/blogs')
-  await api.post('/api/blogs').send(oneBlog).expect(201).expect('Content-Type', /application\/json/)
-  const newResp = await api.get('/api/blogs')
+
+  const token = await getToken()
+
+  const resp = await api.get('/api/blogs').set({ Authorization: token })
+  await api.post('/api/blogs').send(oneBlog).set({ Authorization: token }).expect(201).expect('Content-Type', /application\/json/)
+  const newResp = await api.get('/api/blogs').set({ Authorization: token })
   expect(newResp.body).toHaveLength(resp.body.length + 1)
 },20000)
 
 
+test('Add a blog without login', async () => {
+  await api.post('/api/blogs').send(oneBlog).expect(401).expect('Content-Type', /application\/json/)  
+},20000)
+
+
 test('When likes is not defined,return 0', async () => {
+
+  const token = await getToken()
+
   const newBlog = noHasLikes
-  const resp = await api.post('/api/blogs').send(newBlog).expect(201).expect('Content-Type', /application\/json/)
+  const resp = await api.post('/api/blogs').send(newBlog).set({ Authorization: token }).expect(201).expect('Content-Type', /application\/json/)
   const id = resp.body.id
-  const newResp = await api.get(`/api/blogs/${id}`)
+  const newResp = await api.get(`/api/blogs/${id}`).set({ Authorization: token })
   const likes = Number(newResp.body.likes)
   expect(likes).toBe(0)
 },20000)
 
 test('When title or url is not defiend ,return 400 request', async () => {
-  await api.post('/api/blogs').send(noHasTitle).expect(400)
-  await api.post('/api/blogs').send(noHasUrl).expect(400)
+  const token = await getToken()
+  await api.post('/api/blogs').send(noHasTitle).set({ Authorization: token }).expect(400)
+  await api.post('/api/blogs').send(noHasUrl).set({ Authorization: token }).expect(400)
 },20000)
 
 
 describe("Delete blog",() => {
   test("Delete a blog",async () =>{
-    await api.delete('/api/blogs/5a422a851b54a676234d17f7').send().expect(204)
+    const token = await getToken()
+    const del = await api.delete('/api/blogs/5a422bc61b54a676234d17fc').set({ Authorization: token }).send().expect(204)
+    console.log(del.body)
   })
 
   test("delete a not exist blog",async ()=>{
-    await api.delete("/api/blogs/1111").send().expect(400)
+    const token = await getToken()
+    await api.delete("/api/blogs/1111").set({ Authorization: token }).send().expect(400)
   })
 
 })
@@ -156,12 +181,14 @@ describe("Delete blog",() => {
 
 describe("Update a blog",()=>{
   test("Update a blog",async() =>{
-    const resp = await api.put('/api/blogs/5a422bc61b54a676234d17fc').send(updateBlog).expect(200)
+    const token = await getToken()
+    const resp = await api.put('/api/blogs/5a422bc61b54a676234d17fc').set({ Authorization: token }).send(updateBlog).expect(200)
     expect(resp.body.title).toBe(updateBlog.title)
   })
 
   test("Update with id not exist",async() =>{
-    const resp = await api.put('/api/blogs/111').send(noHasTitle).expect(400)
+    const token =await getToken()
+    const resp = await api.put('/api/blogs/111').set({ Authorization: token }).send(noHasTitle).expect(400)
   })
 })
 
