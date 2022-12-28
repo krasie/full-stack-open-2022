@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -11,6 +12,8 @@ const App = () => {
   const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
   const [author, setAuthor] = useState('')
+  const [message, setMessage] = useState({})
+  
   
 
 
@@ -20,11 +23,20 @@ const App = () => {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
       blogService.setToken(user.token)
+      showMessage('login successful')
     }
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
     )  
   }, [])
+
+
+  const showMessage = (message,type='info') => {
+    setMessage({message:message,type:type})
+        setTimeout(() => {
+          setMessage({})
+        }, 5000)
+  }
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -37,10 +49,13 @@ const App = () => {
         'loggedBlogappUser', JSON.stringify(user)
       ) 
 
+      showMessage('login successful')
+
       setUsername('')
       setPassword('')
 
     }catch(e){
+      showMessage('username or password is incorrect', 'error')
       setTimeout(() => {
       }, 5000)
     }
@@ -58,11 +73,17 @@ const App = () => {
       "url": url,
       "author": author
     }
-    const response = await blogService.create(blogObj)
-    setBlogs(blogs.concat(response))
-    setTitle('')
-    setAuthor('')
-    setUrl('')
+    try{
+      const response = await blogService.create(blogObj)
+      setBlogs(blogs.concat(response))
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+      showMessage('blog created successfully')
+    }catch(e){
+      showMessage('create blog failed', 'error')
+    }
+    
   }
 
   const loginForm = () => (
@@ -120,6 +141,7 @@ const App = () => {
 
   return (
     <div>
+      <Notification message={message.message} type={message.type} />
       {user === null ? loginForm() :
         <div>
           <p>{user.username} logged in</p>
