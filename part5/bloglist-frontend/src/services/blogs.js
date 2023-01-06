@@ -8,9 +8,13 @@ const setToken = newToken => {
 }
 
 
-const getAll = () => {
-  const request = axios.get(baseUrl)
-  return request.then(response => response.data)
+const getAll = async () => {
+  const request = await axios.get(baseUrl) 
+  const data = request.data
+  data.forEach(e => {
+    e.visible=false
+  });
+  return data
 }
 
 const create = async(blog) => {

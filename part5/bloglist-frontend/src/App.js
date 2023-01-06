@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
+import NewBlogForm from './components/NewBlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
+
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -13,7 +15,7 @@ const App = () => {
   const [url, setUrl] = useState('')
   const [author, setAuthor] = useState('')
   const [message, setMessage] = useState({})
-  
+  const [newBlogVisible, setNewBlogVisible] = useState(false)
   
 
 
@@ -25,8 +27,10 @@ const App = () => {
       blogService.setToken(user.token)
       showMessage('login successful')
     }
-    blogService.getAll().then(blogs =>
+    blogService.getAll().then(blogs =>{
       setBlogs( blogs )
+    }
+     
     )  
   }, [])
 
@@ -112,32 +116,36 @@ const App = () => {
     </div>  
   )
 
-  const newBlog = () => (
+const newBlog = () =>{
+
+  const hideWhenVisible = { display: newBlogVisible ? 'none' : '' }
+  const showWhenVisible = { display: newBlogVisible ? '' : 'none' }
+
+  return(
     <div>
-      <h1>New Blog</h1>
-      <form onSubmit={handleNewBlog}>
-        <div>
-          <div>
-            title:<input type="text" 
-                    name="title" 
-                    onChange={ e => setTitle(e.target.value)}/>
-          </div>
-          <div>
-            author:<input type="text" 
-                    name="author" 
-                    onChange={ e => setAuthor(e.target.value)}/>
-          </div>
-          <div>
-            url:<input type="text" 
-                    name="url" 
-                    onChange={e => setUrl(e.target.value)}/>
-          </div>
-          <button type="submit">Create Blog</button>
-        </div>
-      </form>
-    
+      <div style={hideWhenVisible}>
+        <button onClick={e => setNewBlogVisible(true)} >new blog</button>
+      </div>
+      <div style={showWhenVisible}>
+        <NewBlogForm 
+          handleSubmit={handleNewBlog} 
+          handleTitleChange={e => setTitle(e.target.value)}
+          handleAuthorChange={e => setAuthor(e.target.value)}
+          handleUrlChange={e => setUrl(e.target.value)}
+          title={title}
+          author={author}
+          url={url}/>
+          <button onClick={e => setNewBlogVisible(false)} >cancel</button>
+      </div>
     </div>
-    )
+  )
+}
+
+  const handleBlogVisible = e => {
+    const updateBlog = blogs.find(blog => blog.id === e.target.value)
+    updateBlog.visible = !updateBlog.visible
+    setBlogs(blogs.map(obj =>  obj.id === updateBlog.id? updateBlog : obj))
+  }
 
   return (
     <div>
@@ -152,7 +160,10 @@ const App = () => {
       
       <h2>blogs</h2>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} 
+              blog={blog} 
+              handleBlogVisible={handleBlogVisible} 
+        />
       )}
     </div>
   )
