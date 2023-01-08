@@ -65,6 +65,23 @@ const App = () => {
     }
   }
 
+  const handleDeleteBlog = async (e) => {
+    const blog = blogs.filter(blog => blog.id === e.target.value)[0]
+    if(window.confirm(`delete blog '${blog.title}'`)){
+      try{
+        const resp = await blogService.deleteBlog(e.target.value)
+        if(resp.status === 204){
+          console.log('blog deleted')
+          setBlogs(blogs.filter(blog => blog.id !== e.target.value))
+          showMessage('delete blog successful')
+        }
+      }catch(e){
+        showMessage('unauthorized', 'error')
+        
+      }
+    }
+  }
+
   const logout = () => {
     setUser(null)
     window.localStorage.removeItem('loggedBlogappUser')
@@ -168,13 +185,14 @@ const newBlog = () =>{
           {newBlog()}
         </div>
       }
-      
       <h2>blogs</h2>
       {blogs.map(blog =>
         <Blog key={blog.id} 
               blog={blog} 
               handleBlogVisible={handleBlogVisible} 
               handleLike={handleLike}
+              handleDeleteBlog={handleDeleteBlog} 
+              loginUser={user?.id}
         />
       )}
     </div>
