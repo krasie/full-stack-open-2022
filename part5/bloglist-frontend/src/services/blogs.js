@@ -14,6 +14,16 @@ const getAll = async () => {
   data.forEach(e => {
     e.visible=false
   });
+  data.sort((a, b) => {
+    if(a.likes < b.likes){
+      return 1
+    }
+    if(a.likes > b.likes){
+      return -1
+    }
+    return 0
+  }
+)
   return data
 }
 
@@ -25,5 +35,14 @@ const create = async(blog) => {
   return response.data
 }
 
+const update = async(blog) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+  const url = baseUrl + '/' + blog.id
+  const response = await axios.put(url,blog,config)
+  return response
+}
 
-export default { getAll,create,setToken }
+
+export default { getAll,create,setToken,update }

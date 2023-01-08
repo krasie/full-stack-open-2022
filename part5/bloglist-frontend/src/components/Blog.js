@@ -4,7 +4,7 @@ const Blog = (props) => {
     padding: '10px',
     margin: '10px 0', 
   }
-  const buttonShow  = props.blog.visible ? 'show' : 'hide';
+  const buttonShow  = !props.blog.visible ? 'show' : 'hide';
   const visible = {
     display: props.blog.visible? '' : 'none',
   }
@@ -13,7 +13,7 @@ const Blog = (props) => {
     <div>{props.blog.title} <button onClick={props.handleBlogVisible} value={props.blog.id}>{buttonShow}</button></div>
     <div style={visible}>
       <div>{props.blog.url}</div>
-      <div>{props.blog.likes} <button>like</button></div>
+      <div>{props.blog.likes} <button onClick={props.handleLike} value={props.blog.id}>like</button></div>
       <div>{props.blog.author}</div>
     </div>
   </div>  

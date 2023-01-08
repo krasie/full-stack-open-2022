@@ -141,10 +141,21 @@ const newBlog = () =>{
   )
 }
 
-  const handleBlogVisible = e => {
+  const handleBlogVisible = (e) => {
     const updateBlog = blogs.find(blog => blog.id === e.target.value)
     updateBlog.visible = !updateBlog.visible
     setBlogs(blogs.map(obj =>  obj.id === updateBlog.id? updateBlog : obj))
+  }
+
+  const handleLike = async(e) => {
+    const updateBlog = blogs.find(blog => blog.id === e.target.value)
+    updateBlog.likes += 1
+    const res = await blogService.update(updateBlog)
+    console.log(res)
+    if(res.status === 200) {
+      setBlogs(blogs.map(obj =>  obj.id === res.data.id? res.data : obj))
+
+    }
   }
 
   return (
@@ -163,6 +174,7 @@ const newBlog = () =>{
         <Blog key={blog.id} 
               blog={blog} 
               handleBlogVisible={handleBlogVisible} 
+              handleLike={handleLike}
         />
       )}
     </div>
